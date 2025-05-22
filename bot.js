@@ -1,7 +1,25 @@
 require('dotenv').config();
 const { Bot } = require('grammy');
 const { createClient } = require('@supabase/supabase-js');
-const supabaseAuth = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+
+// Fail fast if required environment variables are missing
+const requiredEnv = [
+  'SUPABASE_URL',
+  'SUPABASE_ANON_KEY',
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'TELEGRAM_TOKEN',
+];
+for (const name of requiredEnv) {
+  if (!process.env[name]) {
+    console.error(`Missing environment variable: ${name}`);
+    process.exit(1);
+  }
+}
+
+const supabaseAuth = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 // Initialize Supabase with your Service Role key
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -25,7 +43,8 @@ bot.command('email', async ctx => {
   if (!email) {
     return ctx.reply('❗ Usage: /email you@domain.com');
   }
-  console.log('⚙️ ANON_KEY →', process.env.SUPABASE_ANON_KEY);  const callbackUrl = 'http://localhost:3000/telegram-callback?chatId=' + ctx.from.id;
+  const callbackUrl =
+    'http://localhost:3000/telegram-callback?chatId=' + ctx.from.id;
   const { error } = await supabaseAuth.auth.signInWithOtp({
     email,
     options: { emailRedirectTo: callbackUrl }
