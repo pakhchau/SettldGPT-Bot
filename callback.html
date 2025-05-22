@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Telegram Login Callback</title></head>
+<body>
+  <p>Logging you in…</p>
+  <script>
+    (async () => {
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      const token   = params.get('access_token');
+      const chatId  = new URLSearchParams(window.location.search).get('chatId');
+      if (!token || !chatId) {
+        document.body.innerText = '❌ Missing token or chatId';
+        return;
+      }
+      await fetch('/api/telegram/save-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chatId, token })
+      });
+      document.body.innerHTML = '<h1>✅ Login successful! Return to Telegram.</h1>';
+    })();
+  </script>
+</body>
+</html>
