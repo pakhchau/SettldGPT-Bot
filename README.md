@@ -9,4 +9,8 @@ SUPABASE_SERVICE_ROLE_KEY=<your service role key>
 TELEGRAM_TOKEN=<your Telegram bot token>
 ```
 
+Make sure the values are not wrapped in quotes. Any leading or trailing quotes
+or whitespace will be removed automatically at runtime, but providing the exact
+tokens prevents connection errors such as "Invalid API key".
+
 These values are required at startup. The bot will exit with an error if any are missing.
