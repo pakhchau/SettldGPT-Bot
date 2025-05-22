@@ -77,25 +77,19 @@ bot.command('tables', async ctx => {
   ctx.reply('📋 Tables: ' + (names || 'none'));
 });
 
-// helper to look up the stored JWT via REST with both headers
+// helper to fetch the stored JWT using the Supabase client
 async function getUserJwt(tgId) {
-  const url = process.env.SUPABASE_URL
-    + "/rest/v1/user_telegram?select=jwt&telegram_id=eq." + tgId;
-  console.log("🐛 [getUserJwt] URL →", url);
-  console.log("🐛 [getUserJwt] apikey →", process.env.SUPABASE_SERVICE_ROLE_KEY);
-  const res = await fetch(url, {
-    headers: {
-      apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: "Bearer " + process.env.SUPABASE_SERVICE_ROLE_KEY
-    }
-  });
-  const data = await res.json();
-  if (!res.ok || !Array.isArray(data) || data.length === 0) {
-    console.error("getUserJwt fetch error:", res.status, data);
+  const { data, error } = await supabase
+    .from('user_telegram')
+    .select('jwt')
+    .eq('telegram_id', tgId)
+    .single();
+
+  if (error) {
+    console.error('getUserJwt error:', error);
     return null;
   }
-  return data[0].jwt;
+  return data?.jwt || null;
 }
 
-// helper to look up the stored JWT via REST with both headers
 module.exports = bot;
