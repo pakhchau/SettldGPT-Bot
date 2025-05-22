@@ -4,13 +4,23 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { createClient } = require('@supabase/supabase-js');
 const { Bot } = require('grammy');
-const supabaseAuth = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+
+function getEnv(name) {
+  const value = process.env[name];
+  if (!value) {
+    console.error(`Missing environment variable: ${name}`);
+    process.exit(1);
+  }
+  return value.trim().replace(/^['"]|['"]$/g, '');
+}
+
+const supabaseAuth = createClient(getEnv('SUPABASE_URL'), getEnv('SUPABASE_ANON_KEY'));
 
 // load env
-const bot = new Bot(process.env.TELEGRAM_TOKEN);
+const bot = new Bot(getEnv('TELEGRAM_TOKEN'));
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  getEnv('SUPABASE_URL'),
+  getEnv('SUPABASE_SERVICE_ROLE_KEY')
 );
 
 // reuse your existing bot handlers
