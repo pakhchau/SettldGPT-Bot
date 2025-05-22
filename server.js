@@ -30,9 +30,17 @@ app.post('/api/telegram/save-token', async (req, res) => {
   console.log('Callback payload:', req.body);
   const { chatId, token } = req.body;
   const { data: { user }, error: userErr } = await supabaseAuth.auth.getUser(token);
-  if (userErr || !user) { console.error("Error validating JWT:", userErr); return res.status(401).send("Invalid token"); }  await supabase
+  if (userErr || !user) {
+    console.error('Error validating JWT:', userErr);
+    return res.status(401).send('Invalid token');
+  }
+  await supabase
     .from('user_telegram')
-    .upsert({ user_id: user.id, telegram_id: parseInt(chatId,10) });
+    .upsert({
+      user_id: user.id,
+      telegram_id: parseInt(chatId, 10),
+      jwt: token
+    });
   await bot.api.sendMessage(chatId, '✅ You’re now logged in!');
   res.sendStatus(200);
 });
