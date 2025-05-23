@@ -14,3 +14,7 @@ or whitespace will be removed automatically at runtime, but providing the exact
 tokens prevents connection errors such as "Invalid API key".
 
 These values are required at startup. The bot will exit with an error if any are missing.
+
+## Supabase Edge Function
+
+Deploy the Edge Function in `supabase/functions/exec_sql` so the bot can execute SQL on behalf of the authenticated user. The `/tables` command calls this function with the user's JWT, and your Row Level Security policies are automatically enforced.
